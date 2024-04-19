@@ -1,0 +1,22 @@
+#! /bin/bash
+
+echo "This is automated script to configure HTML Website"
+echo "--------------------------------------------------"
+
+PACKAGE=" nginx wget git"
+SVC="nginx"
+TEMPFILE="/dixit/website/"
+
+sudo apt-get update >/dev/null
+sudo apt-get install $PACKAGE -y >/dev/null
+
+sudo mkdir -p $TEMPFILE
+cd $TEMPFILE
+
+git clone https://github.com/dixit12190/MyRepo.git 
+
+sudo cp -r MyRepo/HTML_Website/* /var/www/html/
+
+sudo rm -rf $TEMPFILE
+
+sudo systemctl restart $SVC
