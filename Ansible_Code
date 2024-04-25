@@ -1,11 +1,11 @@
 ---
-- name: My Ansible test
+- name: My ansible test website
   hosts: all
 
   tasks:
-    - name: run ping command
+    - name: Run ping command
       ping:
-    - name: install nginx service
+    - name: Install nginx webserver
       apt:
         name: nginx
 
