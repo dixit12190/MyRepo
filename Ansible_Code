@@ -25,3 +25,8 @@
       service:
         name: nginx
         state: started
+
+    - name: Delete content & directory
+      file:
+        state: absent
+        path: /etc/ansible/MyRepo/HTML_Website/
