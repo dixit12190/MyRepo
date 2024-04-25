@@ -18,7 +18,7 @@
 
     - name: Copy file from server to nginx location
       copy:
-        src: /etc/ansible/MyRepo/HTML_Website/
+        src: /etc/ansible/MyRepo/
         dest: /var/www/html/
 
     - name: start nginx
