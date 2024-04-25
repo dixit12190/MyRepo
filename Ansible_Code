@@ -1,27 +1,26 @@
 ---
 - name: My Ansible test
   hosts: all
-  
+
   tasks:
     - name: run ping command
-      ping: null
+      ping:
     - name: install nginx service
-      apt: 
-	    name: nginx
-	  
+      apt:
+        name: nginx
+
     - name: Copy file from Git to webserver
       git:
         repo: https://github.com/dixit12190/MyRepo.git
         dest: /etc/ansible/
         clone: yes
         update: yes
-		
+
     - name: Copy file from server to nginx location
       copy:
         src: /etc/ansible/MyRepo/HTML_Website/
         dest: /var/www/html/
-        mode: a+e
-		
+
     - name: start nginx
       service:
         name: nginx
