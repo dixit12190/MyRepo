@@ -1,13 +1,17 @@
 ---
-- name: My ansible test website
+- name: My Ansible test
   hosts: all
+  vars:
+    packages: [nginx, git]
 
   tasks:
-    - name: Run ping command
+    - name: run ping command
       ping:
-    - name: Install nginx webserver
+    - name: install nginx and Other services
       apt:
-        name: nginx
+        name: "{{item}}"
+        state: installed
+      with_items: "{{packages}}"
 
     - name: Copy file from Git to webserver
       git:
@@ -21,12 +25,12 @@
         src: /etc/ansible/MyRepo/HTML_Website/
         dest: /var/www/html/
 
+    - name: Delete content & directory
+      file:
+      state: absent
+      path: /etc/ansible/MyRepo/HTML_Website/
+
     - name: start nginx
       service:
         name: nginx
         state: started
-
-    - name: Delete content & directory
-      file:
-        state: absent
-        path: /etc/ansible/
