@@ -10,7 +10,7 @@
     - name: install nginx and Other services
       apt:
         name: "{{item}}"
-        state: installed
+        state: present
       with_items: "{{packages}}"
 
     - name: Copy file from Git to webserver
