@@ -1,0 +1,60 @@
+
+OpenSSL commands:
+===============================================================
+
+1. Decrypt the SSL certiifcate;
+--------------------------------------------------------------------------------
+openssl rsa -in <encrypted key filename>.key -out <decrypted key filename>.key
+openssl rsa -in test.key -out test1.key
+--------------------------------------------------------------------------------
+
+2. To extract the key file from PFX file
+===================================================================
+openssl pkcs12 -in dvn2_key.pfx -nocerts -out dvn2encrypted.key
+------------------------------------------------------------------
+
+2. To Generate Keys
+--------------------------------------------
+openssl genrsa -out tutorials.key 2048
+--------------------------------------------
+
+3. To Extract the public key from above:
+-----------------------------------------------------------------
+openssl rsa -in tutorials.key  -pubout -out tutorials_public.key
+-----------------------------------------------------------------
+
+4. To generate the CSR with OpenSSL
+---------------------------------------------------------
+openssl req -new -key tutorials.key -out tutorials.csr
+---------------------------------------------------------
+it will ask for CN, Org name, Org unit, Country, state, Common name etc.
+
+
+5. To view created CSR
+----------------------------------------------------
+openssl req -text -in tutorials.csr  -noout -verify
+-----------------------------------------------------
+
+6.To View the content of SSL certificate.
+-------------------------------------------------
+openssl x509 -in <certificatename> -noout -text
+
+-------------------------------------------------
+
+To view certificate expiry details.
+-------------------------------------------------------------------------
+openssl s_client -connect 10.96.128.231:8443 | openssl x509 -noout -dates
+--------------------------------------------------------------------------
+
+To print supported ciphers with AWK
+-----------------------------------------------------------------------
+tmm --clientciphers 'ECDHE' |  awk '{printf "0x%X\t",$2,$0} {print $0}'
+------------------------------------------------------------------------
+
+Curl with host and URi
+--------------------------------------------------------------------------
+curl --connect-timeout 10 -m 5 -k -H "Host: telstra.com" https://203.36.190.8/siteminderagent/forms/logout.jsp?mode=1
+--------------------------------------------------------------------------
+
+
+openssl s_client -connect 10.61.159.141:443 -servername api.staging.maas.com -cert ./certificate_d/\:p-INTCLOUD\:addressq.poc.in.au_20240503_sha2.crt_141140_1  -key ./certificate_key_d/\:p-INTCLOUD\:addressq.poc.in.au_20240503_sha2.key_141146_1
