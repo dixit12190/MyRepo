@@ -2,8 +2,15 @@ I've written the shell script to take the application data backup with CRON job.
 
 =================================================================================================================================================================
 #!/bin/bash
-DATE=$(date '+%F_%T')
+#########################################################
+# Author       :  Dixit R                               #                             #
+# Created Date :  01/11/2024                            #
+# Version      :  V1                                    #
+# Auto backup & tranfer backup files to Remote Server   #   
+#########################################################
 
+set -o pipefail
+set -e # Exit the script when error
 cd /home/ubuntu/frappe-bench && /usr/local/bin/bench --verbose --site all backup --with-files >> /home/ubuntu/frappe-bench/logs/backup.log 2>&1
 
 LOG_FILE="/home/ubuntu/frappe-bench/logs/backup.log"
