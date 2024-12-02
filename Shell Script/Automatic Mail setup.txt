@@ -1,0 +1,52 @@
+#!/bin/bash
+
+echo "Postfix mail service script to configure SMTP."
+echo "Installing Postfix service.."
+sleep 2
+
+#sudo dpkg -l | grep postfix  > /dev/null
+
+sudo apt update
+sudo apt install -y postfix 
+sudo apt install -y mailutils
+
+
+cd /etc/postfix
+
+file="/etc/postfix/main.cf"
+old_parameter1="relayhost ="
+new_parameter1="relayhost = [smtp.gmail.com]:587"
+new_parameter2="erpnext2"
+
+sed -i "s/$old_parameter1/$new_parameter1/g" $file
+sed -i "s/$old_parameter2/$new_parameter2/g" $file
+sed -i "s/myhostname = ip-[0-9]*-[0-9]*-[0-9]*-[0-9]*\.ec2\.internal/myhostname = $new_parameter2/g" $file
+sed -i "s/smtp_tls_security_level=may/smtp_tls_security_level=encrypt/g" $file
+echo "Parameter updated successfully in $file"
+
+echo "smtp_sasl_password_maps = hash:/etc/postfix/sasl/sasl_passwd" >> /etc/postfix/main.cf
+echo "smtp_sasl_auth_enable = yes" >> /etc/postfix/main.cf
+echo "smtp_tls_security_level = encrypt" >> /etc/postfix/main.cf
+echo "smtp_sasl_security_options = noanonymous" >> /etc/postfix/main.cf
+echo "smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt" >> /etc/postfix/main.cf
+
+echo "Restarting the postfix service"
+
+systemctl reload postfix
+
+cd /etc/postfix/sasl/
+
+echo "Creating sasl file"
+touch sasl_passwd
+
+echo "[smtp.gmail.com]:587 dr.dixit90@gmail.com:password" >> sasl_passwd
+
+echo "converting the sasl_passwd file into db file."
+
+sudo postmap /etc/postfix/sasl/sasl_passwd
+
+echo "Restarting the postfix service"
+
+systemctl restart postfix
+
+echo "Test Mail from script" | mail -s "Mail setup has been completed successfully. Cheers!!" dixitpatel12190@gmail.com

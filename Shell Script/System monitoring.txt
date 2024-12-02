@@ -1,0 +1,14 @@
+#! /bin/bash
+
+echo "System Health-checkup"
+echo "====================="
+
+MEMORY=$(free -mh | grep "Mem:" | awk '{gsub(/Gi/, ""); print$6}')
+echo "System Available memory is:$MEMORY GB out of 62 GB"
+echo
+CPU=$(top -bn1 | grep load | awk '{printf "%.2f%%\t\t\n", $(NF-2)}')
+echo "System average CPU utilization is:$CPU"
+echo
+DISK=$(df -h | awk '$NF=="/"{printf "%s\t\t", $5}')
+echo "System Disk utilization is:$DISK"
+echo "-----------------------------------"

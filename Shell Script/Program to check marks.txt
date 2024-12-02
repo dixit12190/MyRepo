@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+
+echo "This program is to check user is pass or fail"
+
+read -p "Enter the marks you have obtained in Science:" marks
+
+if       [[ $marks -ge 80 ]]
+then
+        echo "You have got distiction"
+elif
+        [[ $marks -le 79 ]] & [[ $marks -ge 65 ]]
+then
+        echo "You have got First Class"
+elif
+        [[ $marks -le 64 ]] & [[ $marks -ge 45 ]]
+then
+        echo "you have got Second clss"
+elif
+        [[ $marks -le 44 ]] & [[ $marks -ge 35 ]]
+then
+        echo "You are third class"
+else
+        echo "you are fail"
+fi

@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+
+echo "Simple linux package update/install tool."
+echo "------------------------------------------"
+
+read -p "Enter the name of package you wish to Update/Install/Remove: " toolname
+echo "Checking if -> $toolname already been instlled in system"
+sleep 2
+
+list=( [tool]=$toolname )
+
+sudo dpkg -l | grep ${list[tool]}  > /dev/null
+
+if [[ $? -eq 0 ]]
+then
+         echo
+         echo "${list[tool]} is already been installed in your system"
+     
+         read -p "Do you wish to update it, enter 'yes' to proceed.:" update
+         
+         read -p "Do you with to remove ${list[tool]} enter 'yes' to proceed & 'no' to exit.:" remove
+
+         choice=( [updat]=$update [quit]=$exit1 [remov]=$remove )
+         
+         if [[ ${choice[updat]} == "yes" ]]
+         then
+                sudo apt-get update
+                sudo dpkg -l | grep ${list[tool]}
+         else
+              
+               if [[ ${choice[remov]} == "yes" ]]
+               then
+                     sudo apt remove --purge -y ${list[tool]}
+               else
+                    exit 1
+               fi
+         fi
+else
+                echo
+                read -p "${list[tool]} is not installed. Do you wish to install it, enter 'yes' to proceed?:" yes
+                if [[ $yes == "yes" ]]
+                then
+                        sudo apt-get update
+                        sudo apt-get install -y ${list[tool]} > /dev/null
+                        sudo dpkg -l | grep ${list[tool]}
+
+                else
+                        exit 1
+                fi
+fi

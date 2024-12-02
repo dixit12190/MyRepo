@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+
+echo "This programe is for switch case."
+
+echo "Please choose option for list"
+echo "a = To check the current system time"
+echo "b = To check the ping for google.com"
+echo "c = To check the system avail memory"
+
+
+read -p "Enter your choise :" choise
+
+case $choise in
+        a)
+           echo "Current date is :" 
+           date +"Time:%H:%M:%S-Date:%d-%m-%Y";;
+        b)ping -c 5 google.com;;
+        c)free -mh;;
+        *)echo "Invalid choise"
+esac
+
