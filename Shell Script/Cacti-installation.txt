@@ -1,0 +1,70 @@
+
+echo "Server is updating now"
+sudo apt-get update -y > /dev/null
+
+echo "Installing required dependancies"
+echo "This will take some time!!!"
+
+sudo apt-get install snmp php-snmp rrdtool librrds-perl unzip curl git gnupg2 -y > /dev/null
+sudo apt-get install apache2 mariadb-server php8.3 php8.3-mysql libapache2-mod-php php-xml -y  > /dev/null
+sudo add-apt-repository ppa:ondrej/php -y > /dev/null
+sudo apt-get install software-properties-common -y > /dev/null
+
+echo "Installing PHP 8.3"
+sudo apt-get install php8.3-ldap -y 
+sudo apt-get install php8.3-gd -y   
+sudo apt-get install php8.3-gmp -y 
+sudo apt-get install php8.3-intl -y 
+sudo apt-get install php8.3-ldap -y 
+sudo apt-get install php8.3-mbstring -y 
+ 
+echo "configuring PHP INI files"
+sudo sed -i 's/^memory_limit *= *.*/memory_limit = 512M/' /etc/php/8.3/apache2/php.ini
+sudo sed -i 's/^max_execution_time *= *.*/max_execution_time = 60/' /etc/php/8.3/apache2/php.ini
+sudo sed -i 's/^date\.timezone *= *.*/date.timezone = Asia\/Kolkata/' /etc/php/8.3/apache2/php.ini
+
+echo "configuring PHP CLI files"
+sudo sed -i 's/^memory_limit *= *.*/memory_limit = 512M/' /etc/php/8.3/cli/php.ini
+sudo sed -i 's/^max_execution_time *= *.*/max_execution_time = 60/' /etc/php/8.3/cli/php.ini
+sudo sed -i 's/^date\.timezone *= *.*/date.timezone = Asia\/Kolkata/' /etc/php/8.3/cli/php.ini
+
+sudo systemctl restart apache2
+
+sudo sed -i 's/^collation-server *= *.*/collation-server = utf8mb4_unicode_ci/' /etc/mysql/mariadb.conf.d/50-server.cnf
+
+sudo sed -i "/^\[mysqld\]/a collation-server = utf8mb4_unicode_ci\nmax_heap_table_size = 512M\ntmp_table_size = 512M\njoin_buffer_size = 1024M\ninnodb_file_format = Barracuda\ninnodb_doublewrite = OFF\nbind-address = 0.0.0.0" /etc/mysql/mariadb.conf.d/50-server.cnf
+
+echo "Restarting MySQL..."
+
+sudo systemctl restart mariadb
+
+MYSQL_ROOT_PASSWORD=""
+
+sudo mysql -u root -p"admin" <<MYSQL_SCRIPT
+CREATE DATABASE cacti;
+CREATE USER cactiuser@localhost IDENTIFIED BY 'cactiuser';
+GRANT ALL PRIVILEGES ON cacti.* TO 'cactiuser'@'localhost';
+FLUSH PRIVILEGES;
+MYSQL_SCRIPT
+
+sudo mysql mysql < /usr/share/mysql/mysql_test_data_timezone.sql
+
+sudo mysql -u root -p"admin" <<MYSQL_SCRIPT
+GRANT SELECT ON mysql.time_zone_name TO 'cactiuser'@'localhost';
+flush privileges;
+MYSQL_SCRIPT
+
+
+cd /home/ubuntu/cacti
+sudo mkdir cacti
+sudo wget https://www.cacti.net/downloads/cacti-latest.tar.gz
+sudo tar -zxvf cacti-latest.tar.gz
+sudo mv cacti-1* /var/www/html/cacti
+sudo mysql cacti < /var/www/html/cacti/cacti.sql
+
+touch /var/www/html/cacti/log/cacti.log
+
+sudo chown -R www-data:www-data /var/www/html/cacti/
+sudo chmod -R 775 /var/www/html/cacti/
+
+sudo systemctl restart apache2
