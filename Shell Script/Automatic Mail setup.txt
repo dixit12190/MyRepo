@@ -39,7 +39,7 @@ cd /etc/postfix/sasl/
 echo "Creating sasl file"
 touch sasl_passwd
 
-echo "[smtp.gmail.com]:587 dr.dixit90@gmail.com:password" >> sasl_passwd
+echo "[smtp.gmail.com]:587 dixit@gmail.com:password" >> sasl_passwd
 
 echo "converting the sasl_passwd file into db file."
 
@@ -49,4 +49,4 @@ echo "Restarting the postfix service"
 
 systemctl restart postfix
 
-echo "Test Mail from script" | mail -s "Mail setup has been completed successfully. Cheers!!" dixitpatel12190@gmail.com
+echo "Test Mail from script" | mail -s "Mail setup has been completed successfully. Cheers!!" dixit@gmail.com
