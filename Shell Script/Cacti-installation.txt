@@ -30,41 +30,43 @@ sudo sed -i 's/^date\.timezone *= *.*/date.timezone = Asia\/Kolkata/' /etc/php/8
 
 sudo systemctl restart apache2
 
+echo "Updating PHP conf files"
 sudo sed -i 's/^collation-server *= *.*/collation-server = utf8mb4_unicode_ci/' /etc/mysql/mariadb.conf.d/50-server.cnf
 
 sudo sed -i "/^\[mysqld\]/a collation-server = utf8mb4_unicode_ci\nmax_heap_table_size = 512M\ntmp_table_size = 512M\njoin_buffer_size = 1024M\ninnodb_file_format = Barracuda\ninnodb_doublewrite = OFF\nbind-address = 0.0.0.0" /etc/mysql/mariadb.conf.d/50-server.cnf
 
 echo "Restarting MySQL..."
-
 sudo systemctl restart mariadb
 
-MYSQL_ROOT_PASSWORD=""
+MYSQL_ROOT_PASS="admin"
 
-sudo mysql -u root -p"admin" <<MYSQL_SCRIPT
+echo "Configuring MySQL Database & User"
+sudo mysql -u root -p"$MYSQL_ROOT_PASS" <<MYSQL_SCRIPT
 CREATE DATABASE cacti;
-CREATE USER cactiuser@localhost IDENTIFIED BY 'cactiuser';
-GRANT ALL PRIVILEGES ON cacti.* TO 'cactiuser'@'localhost';
+CREATE USER cactiadmin@localhost IDENTIFIED BY 'cactiadmin';
+GRANT ALL PRIVILEGES ON cacti.* TO 'cactiadmin'@'localhost';
 FLUSH PRIVILEGES;
 MYSQL_SCRIPT
 
 sudo mysql mysql < /usr/share/mysql/mysql_test_data_timezone.sql
 
-sudo mysql -u root -p"admin" <<MYSQL_SCRIPT
-GRANT SELECT ON mysql.time_zone_name TO 'cactiuser'@'localhost';
+sudo mysql -u root -p"$MYSQL_ROOT_PASS" <<MYSQL_SCRIPT
+GRANT SELECT ON mysql.time_zone_name TO 'cactiadmin'@'localhost';
 flush privileges;
 MYSQL_SCRIPT
 
 
 cd /home/ubuntu/cacti
 sudo mkdir cacti
-sudo wget https://www.cacti.net/downloads/cacti-latest.tar.gz
-sudo tar -zxvf cacti-latest.tar.gz
+echo "Downloading Cacti from internet"
+sudo wget https://www.cacti.net/downloads/cacti-latest.tar.gz > /dev/null
+sudo tar -zxvf cacti-latest.tar.gz > /dev/nul
 sudo mv cacti-1* /var/www/html/cacti
 sudo mysql cacti < /var/www/html/cacti/cacti.sql
 
 touch /var/www/html/cacti/log/cacti.log
 
 sudo chown -R www-data:www-data /var/www/html/cacti/
-sudo chmod -R 775 /var/www/html/cacti/
+sudo chmod -R 744 /var/www/html/cacti/
 
 sudo systemctl restart apache2
